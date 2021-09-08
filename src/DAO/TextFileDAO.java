@@ -31,19 +31,33 @@ public class TextFileDAO {
         return inventoryItems;
     }
 
-    private List<InventoryItem> readFile() throws FileNotFoundException, IOException, ParseException {
+    public void saveAllInventoryItems(List<InventoryItem> inventoryItems) {
+        try {
+            writeFile(createString(inventoryItems));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private List<InventoryItem> readFile() throws IOException, ParseException {
+        List<InventoryItem> inventoryItems = new ArrayList<InventoryItem>();
         try (BufferedReader br = new BufferedReader(new FileReader(FILENAME))) {
             String line = br.readLine();
 
-            List<InventoryItem> inventoryItems = new ArrayList<InventoryItem>();
-
             while (line != null) {
-                InventoryItem inventoryItem = parseLine(line);
-                inventoryItems.add(inventoryItem);
+                if (line.length() > 0) {
+                    InventoryItem inventoryItem = parseLine(line);
+                    inventoryItems.add(inventoryItem);
+                }
                 line = br.readLine();
             }
-            return inventoryItems;
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found. Initializing new file.");
+            writeFile("");
         }
+        return inventoryItems;
     }
 
     private InventoryItem parseLine(String line) throws ParseException {
@@ -53,8 +67,8 @@ public class TextFileDAO {
 
         inventoryItem.id = Long.parseLong(splittedLine[0]);
         inventoryItem.entryDate = new SimpleDateFormat("dd/MM/yyyy").parse(splittedLine[1]);
-        inventoryItem.purchasePlace = splittedLine[2];
-        inventoryItem.tipo = splittedLine[3];
+        inventoryItem.postalCode = splittedLine[2];
+        inventoryItem.type = splittedLine[3];
         inventoryItem.brand = splittedLine[4];
         inventoryItem.description = splittedLine[5];
         inventoryItem.size = splittedLine[6];
@@ -67,13 +81,13 @@ public class TextFileDAO {
         return inventoryItem;
     }
 
-    public void writeFile(String content) throws FileNotFoundException, UnsupportedEncodingException {
+    private void writeFile(String content) throws FileNotFoundException, UnsupportedEncodingException {
         try (PrintWriter writer = new PrintWriter(FILENAME, CHARSET)) {
             writer.print(content);
         }
     }
 
-    public String createString(List<InventoryItem> inventoryItems) {
+    private String createString(List<InventoryItem> inventoryItems) {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i <= inventoryItems.size() - 1; i++) {
@@ -81,9 +95,9 @@ public class TextFileDAO {
             stringBuilder.append("|");
             stringBuilder.append(new SimpleDateFormat("dd/MM/yyyy").format(inventoryItems.get(i).entryDate));
             stringBuilder.append("|");
-            stringBuilder.append(inventoryItems.get(i).purchasePlace);
+            stringBuilder.append(inventoryItems.get(i).postalCode);
             stringBuilder.append("|");
-            stringBuilder.append(inventoryItems.get(i).tipo);
+            stringBuilder.append(inventoryItems.get(i).type);
             stringBuilder.append("|");
             stringBuilder.append(inventoryItems.get(i).brand);
             stringBuilder.append("|");
@@ -100,10 +114,7 @@ public class TextFileDAO {
             stringBuilder.append(inventoryItems.get(i).suggestedPrice);
             stringBuilder.append("|");
             stringBuilder.append(inventoryItems.get(i).valueWithMargin);
-
-            if (i != inventoryItems.size() - 1) {
-                stringBuilder.append("\n");
-            }
+            stringBuilder.append("\n");
         }
 
         return stringBuilder.toString();

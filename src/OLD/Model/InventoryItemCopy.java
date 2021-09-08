@@ -7,7 +7,7 @@ public class InventoryItemCopy {
     long id;
     Date entryDate;
     PurchasePlace purchasePlace;
-    String tipo;
+    String type;
     String brand;
     String description;
     EnumSize size;

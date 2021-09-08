@@ -5,8 +5,8 @@ import java.util.Date;
 public class InventoryItem {
     public long id;
     public Date entryDate;
-    public String purchasePlace;
-    public String tipo;
+    public String postalCode;
+    public String type;
     public String brand;
     public String description;
     public String size;
@@ -15,6 +15,4 @@ public class InventoryItem {
     public Double amountPaidOnPurchase;
     public Double suggestedPrice;
     public Double valueWithMargin;
-
-    Short marginValue = 100;
 }
